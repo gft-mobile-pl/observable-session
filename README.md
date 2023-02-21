@@ -72,7 +72,16 @@ class UpdateCollectedUsernameUseCase internal constructor(
 }
 ```
 
-#### Getting data from session
+#### Getting data from session (synchronously)
+```kotlin
+class GetAccessTokenUseCase internal constructor(
+    private val loggedInSession: LoggedInSession
+) {
+    operator fun invoke(): String = loggedInSession.requireData().accessToken
+}
+```
+
+#### Streaming data from session
 ```kotlin
 class GetCollectedUsernameUseCase internal constructor(
     private val loginSession: LoginSession
