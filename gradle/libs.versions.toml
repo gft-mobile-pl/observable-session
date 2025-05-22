@@ -13,6 +13,7 @@ koin = "3.3.2"
 test-junit = "1.1.5"
 espresso = "3.5.1"
 junit = "4.13.2"
+concurrency = "1.0.0"
 
 [libraries]
 androidx-core-ktx = { group = "androidx.core", name = "core-ktx", version.ref = "coreKtx" }
@@ -27,6 +28,7 @@ coroutines-core = { module = "org.jetbrains.kotlinx:kotlinx-coroutines-core", ve
 coroutines-test = { module = "org.jetbrains.kotlinx:kotlinx-coroutines-test", version.ref = "coroutines" }
 koin-android = { module = "io.insert-koin:koin-android", version.ref = "koin" }
 junit = { module = "junit:junit", version.ref = "junit" }
+concurrency = { group = "com.gft.mobile", name = "concurrency", version.ref = "concurrency" }
 
 [plugins]
 android-application = { id = "com.android.application", version.ref = "agp" }

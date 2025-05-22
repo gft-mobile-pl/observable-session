@@ -1,5 +1,7 @@
 package com.gft.observablesession
 
+import com.gft.concurrency.Lock
+import com.gft.concurrency.withLock
 import com.gft.coroutines.flow.StrictEqualityMutableStateFlow
 import kotlinx.coroutines.CoroutineStart
 import kotlinx.coroutines.Dispatchers
@@ -27,39 +29,35 @@ open class Session<DATA> {
     private var _isStarted: Boolean = false
     private var _data = StrictEqualityMutableStateFlow<DATA?>(null)
     val data: StateFlow<DATA?> = _data
+    private val lock = Lock()
 
-    @Synchronized
-    fun start(data: DATA) {
+    fun start(data: DATA) = lock.withLock {
         if (_isStarted) throw SessionStartedAlreadyException(this)
         _isStarted = true;
         _data.value = data
     }
 
-    @Synchronized
-    fun end() {
+    fun end() = lock.withLock {
         if (_isStarted.not()) throw SessionNotStartedException(this)
         _isStarted = false
         _data.value = null
     }
 
-    @Synchronized
-    fun update(transformer: (currentData: DATA) -> DATA): DATA {
+    fun update(transformer: (currentData: DATA) -> DATA): DATA = lock.withLock {
         if (_isStarted.not()) throw SessionNotStartedException(this)
         val currentData = _data.value
         _data.value = transformer(currentData!!)
-        return _data.value!!
+        _data.value!!
     }
 
     val isStarted: Boolean
-        @Synchronized get() = _isStarted
+        get() = lock.withLock { _isStarted }
 
-    @Synchronized
-    fun requireData(): DATA {
+    fun requireData(): DATA = lock.withLock {
         if (_isStarted.not()) throw SessionNotStartedException(this)
-        return data.value!!
+        data.value!!
     }
 
     class SessionNotStartedException(session: Session<*>) : RuntimeException("Session $session is not started")
     class SessionStartedAlreadyException(session: Session<*>) : RuntimeException("Session $session is started already")
 }
-
